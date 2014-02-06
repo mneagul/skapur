@@ -1,0 +1,30 @@
+
+
+# extremely simple HTTP file store
+# !!! USE IT AT YOUR OWN RISK !!!
+
+
+# prepare the environment
+
+mkdir /tmp/skapur
+
+
+# start the service
+
+go run ./sources/skapur.go --address 127.0.0.1:8080 --store /tmp/skapur --secret verysecret
+
+
+# fetch a file
+
+curl -v -X GET http://127.0.0.1:8080/skapur/v1/test-a
+
+
+# prepare the signature for storing a file
+
+import hmac; import hashlib; hmac.new ("verysecret", "test-a", hashlib.sha256) .hexdigest ()
+# a10c5e11bac53da4bccc3ea412194c8f71d01140bfdce6d05e0d0656143f1a82
+
+
+# storing a file
+
+curl -v -X PUT -T /dev/stdin http://127.0.0.1:8080/skapur/v1/test-a:a10c5e11bac53da4bccc3ea412194c8f71d01140bfdce6d05e0d0656143f1a82 <<<'test-a'
